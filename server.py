@@ -40,8 +40,11 @@ tasks_db = {
 #     return {"tasks": tasks}
 
 # @enable_cors
-# @app.route("/api/add-task/", method="POST")
+# @app.route("/api/add-task/", method=["POST", "OPTIONS"])
 # def add_task():
+#     bottle.response.headers['Access-Control-Allow-Origin'] = '*'
+#     if bottle.request.method == "OPTIONS":
+#         return "It is OPTIONS method"
 #     desc = bottle.request.json['description']
 #     is_completed = bottle.request.json['is_completed']
 #     if len(desc) > 0:
@@ -62,8 +65,10 @@ def api_complete(uid):
     return "Ok"
 
 @enable_cors
-@app.route("/api/tasks/", method=["GET", "POST"])
+@app.route("/api/tasks/", method=["GET", "POST", "OPTIONS"])
 def add_task():  
+    if bottle.request.method == "OPTIONS":
+        return "It is OPTIONS method"
     if bottle.request.method == 'GET':
         tasks = [task.to_dict() for task in tasks_db.values()]
         return {"tasks": tasks}
@@ -83,7 +88,20 @@ def add_task():
 #     bottle.response.headers['Access-Control-Allow-Origin'] = '*'
 #     tasks = [task.to_dict() for task in tasks_db.values()]
 #     return {"tasks": tasks}
-
+@enable_cors
+@app.route("/api/tasks/<uid:int>", method=["GET", "PUT", "DELETE"])
+def show_or_modify_task(uid):
+    if bottle.request.method == "GET":
+        return tasks_db[uid].to_dict()
+    elif bottle.request.method == "PUT":
+        if "description" in bottle.request.json:
+            tasks_db[uid].description = bottle.request.json['description']
+        if "is_completed" in bottle.request.json:
+            tasks_db[uid].is_completed = bottle.request.json['is_completed']
+        return f"Modified task {uid}"
+    elif bottle.request.method == "DELETE":
+        tasks_db.pop(uid)
+        return f"Deleted task {uid}"
 
 app.install(CorsPlugin(origins=['http://localhost:8000'])) #настроили источники, с которых этим ресурсом можно пользоваться 
 

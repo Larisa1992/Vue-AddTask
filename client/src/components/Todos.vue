@@ -104,8 +104,8 @@ import Confirmation from './Confirmation.vue';
 // const dataURL = 'https://api.jsonbin.io/b/5e90e8278e85c84370140777';
 const dataURL = 'http://localhost:5000/api/tasks/';
 
-const todoAddURL = 'http://localhost:5000/api/add-task/';
-const todoListURL = 'http://localhost:5000/api/tasks/';
+// const todoAddURL = 'http://localhost:5000/api/add-task/';
+// const todoListURL = 'http://localhost:5000/api/tasks/';
 
 export default {
   name: 'Todo',
@@ -121,13 +121,13 @@ export default {
         description: '',
         is_completed: [],
       },
-      message: '',
+      confirmationMessage: '',
       showConfirmation: false,
     };
   },
   methods: {
     getTodos() {
-      axios.get(todoListURL)
+      axios.get(dataURL)
         .then((response) => {
           this.todos = response.data.tasks;
         });
@@ -145,10 +145,10 @@ export default {
         description: this.addTodoForm.description,
         is_completed: this.addTodoForm.is_completed.length > 0,
       };
-      axios.post(todoAddURL, requestData)
+      axios.post(dataURL, requestData)
         .then(() => {
           this.getTodos();
-          this.message = `Задача "${requestData.description}" добавлена`;
+          this.confirmationMessage = `Задача "${requestData.description}" добавлена`;
           this.showConfirmation = true;
         });
       this.resetForm();

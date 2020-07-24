@@ -4,7 +4,7 @@
       <h1>Задачи</h1>
     <confirmation
       :message="confirmationMessage"
-      v-if="showConfirmation">
+      :showDismissibleAlert = "showConfirmation">
     </confirmation>
       <button type="button" id="task-add" class="btn btn-success btn-sm align-left d-block"
        v-b-modal.todo-modal>Добавить задачу</button>
@@ -161,8 +161,14 @@ export default {
     updateTodo(todo) {
       this.updateTodoForm.uid = todo.uid;
       this.updateTodoForm.description = todo.description;
+      this.updateTodoForm.is_completed = todo.is_completed;
+
+      this.confirmationMessage = `Задача с идентификатором ${todo.uid} обновлена`;
+
+      this.showConfirmation = true;
       if (todo.is_completed) {
         this.updateTodoForm.is_completed = [true];
+        this.showConfirmation = true;
       }
     },
     onUpdateSubmit(event) {
@@ -173,13 +179,16 @@ export default {
         is_completed: this.updateTodoForm.is_completed.length > 0,
       };
       const todoURL = dataURL + this.updateTodoForm.uid;
-
       axios.put(todoURL, requestData)
         .then(() => {
           this.getTodos();
-          this.message = 'Задача обновлена';
           this.showConfirmation = true;
         });
+      if (requestData.is_completed) {
+        this.confirmationMessage = `Задача "${requestData.description}" выполнена`;
+      } else {
+        this.confirmationMessage = `Задача  "${requestData.description}" обновлена`;
+      }
     },
     onUpdateReset(event) {
       event.preventDefault();
@@ -191,7 +200,7 @@ export default {
       axios.delete(todoURL)
         .then(() => {
           this.getTodos();
-          this.confirmationMessage = 'Задача удалена из списка';
+          this.confirmationMessage = `Задача "${todo.description}" удалена из списка`;
           this.showConfirmation = true;
         });
     },

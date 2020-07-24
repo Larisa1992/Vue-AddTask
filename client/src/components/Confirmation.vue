@@ -1,11 +1,11 @@
 <template>
   <div>
-    <b-alert variant="success" show>{{ message }}</b-alert>
+    <b-alert variant="success" :show="showDismissibleAlert" dismissible>{{ message }}</b-alert>
   </div>
 </template>
 
 <script>
 export default {
-  props: ['message'],
+  props: ['message', 'showDismissibleAlert'],
 };
 </script>

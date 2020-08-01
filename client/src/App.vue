@@ -4,6 +4,12 @@
   </div>
 </template>
 
+<script>
+  function foo() {}
+  console.log(foo())
+  alert('hello')
+</script>
+
 <style>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
